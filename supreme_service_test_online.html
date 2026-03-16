@@ -210,10 +210,8 @@
       color:var(--muted);
       margin-top:12px;
     }
-    .print-only{display:none}
     @media print{
       .no-print{display:none !important}
-      .print-only{display:block}
       body{background:#fff}
       .wrap{max-width:none; margin:0; padding:0}
       .card, .question{
@@ -240,7 +238,7 @@
 
     <div class="card">
       <h1>Supreme Service – Test online</h1>
-      <p class="muted">Wersja z automatycznym liczeniem punktów, limitem czasu i arkuszem wyników.</p>
+      <p class="muted">Wersja z automatycznym liczeniem punktów, limitem czasu i zapisem wyników do Google Sheets.</p>
       <div class="grid">
         <div>
           <label class="block" for="employeeName">Imię i nazwisko</label>
@@ -310,116 +308,21 @@
 <script>
 const EXAM_MINUTES = 10;
 const PASS_SCORE = 9;
+const SHEETS_ENDPOINT = "https://script.google.com/macros/s/AKfycbz6X9iVZ_3rnRkQH-eRMMr7LU86gyKzHu7O2iY_j6RhXkiLvlBc_SHxwu2uJxXHI9fJmQ/exec";
 
 const questions = [
-  {
-    q: "Gość mówi, że burger jest zimny.",
-    options: {
-      A: "Sprawdzasz burgera i potem proponujesz wymianę",
-      B: "Przepraszasz i od razu proponujesz wymianę",
-      C: "Proponujesz nowego burgera"
-    },
-    correct: "B"
-  },
-  {
-    q: "Gość dostał złe zamówienie, ale mówi „może być”.",
-    options: {
-      A: "Pytasz czy jest pewny",
-      B: "Proponujesz poprawę zamówienia",
-      C: "Mówisz że jeśli chce możesz wymienić"
-    },
-    correct: "B"
-  },
-  {
-    q: "Gość pyta o skład burgera, którego nie pamiętasz.",
-    options: {
-      A: "Mówisz że nie jesteś pewny, ale zapytasz kolegi",
-      B: "Sprawdzasz dokładne informacje",
-      C: "Mówisz co prawdopodobnie jest w burgerze"
-    },
-    correct: "B"
-  },
-  {
-    q: "Kolejka jest bardzo długa, a gość zadaje pytania.",
-    options: {
-      A: "Odpowiadasz krótko i uprzejmie",
-      B: "Proponujesz szybką rekomendację",
-      C: "Odpowiadasz znikomo"
-    },
-    correct: "B"
-  },
-  {
-    q: "Gość wygląda na zdenerwowanego.",
-    options: {
-      A: "Pytasz czy możesz pomóc",
-      B: "Pytasz „co się stało?”",
-      C: "Czekasz aż sam coś powie"
-    },
-    correct: "A"
-  },
-  {
-    q: "Gość mówi że czeka bardzo długo.",
-    options: {
-      A: "Sprawdzasz zamówienie i pytasz kuchni kiedy będzie",
-      B: "Przepraszasz i sprawdzasz zamówienie",
-      C: "Wyjaśniasz że masz bardzo dużo zamówień"
-    },
-    correct: "B"
-  },
-  {
-    q: "Gość prosi o pomoc przy kiosku zamówień.",
-    options: {
-      A: "Pomagasz",
-      B: "Prosisz kolegę o pomoc",
-      C: "Pomagasz lub organizujesz pomoc"
-    },
-    correct: "C"
-  },
-  {
-    q: "Gość pyta o czas oczekiwania.",
-    options: {
-      A: "Podajesz przybliżony czas",
-      B: "Sprawdzasz zamówienie i informujesz",
-      C: "Mówisz że trudno powiedzieć"
-    },
-    correct: "B"
-  },
-  {
-    q: "Gość mówi że restauracja jest brudna.",
-    options: {
-      A: "Dziękujesz za uwagę",
-      B: "Dziękujesz i reagujesz",
-      C: "Dziękujesz i mówisz że ktoś się tym zajmie"
-    },
-    correct: "B"
-  },
-  {
-    q: "Gość pyta o rekomendację burgera.",
-    options: {
-      A: "Polecasz najpopularniejszy burger",
-      B: "Pytasz co lubi i polecasz burgera",
-      C: "Mówisz że wszystko jest dobre"
-    },
-    correct: "B"
-  },
-  {
-    q: "Gość dziękuje za obsługę.",
-    options: {
-      A: "Uśmiechasz się",
-      B: "Odpowiadasz uprzejmie",
-      C: "Odpowiadasz uprzejmie i zapraszasz ponownie"
-    },
-    correct: "C"
-  },
-  {
-    q: "Gość wychodzi z restauracji.",
-    options: {
-      A: "Uśmiechasz się",
-      B: "Uśmiechasz się i żegnasz",
-      C: "Mówisz „do widzenia, zapraszamy ponownie”"
-    },
-    correct: "C"
-  }
+  { q: "Gość mówi, że burger jest zimny.", options: { A: "Sprawdzasz burgera i potem proponujesz wymianę", B: "Przepraszasz i od razu proponujesz wymianę", C: "Proponujesz nowego burgera" }, correct: "B" },
+  { q: "Gość dostał złe zamówienie, ale mówi „może być”.", options: { A: "Pytasz czy jest pewny", B: "Proponujesz poprawę zamówienia", C: "Mówisz że jeśli chce możesz wymienić" }, correct: "B" },
+  { q: "Gość pyta o skład burgera, którego nie pamiętasz.", options: { A: "Mówisz że nie jesteś pewny, ale zapytasz kolegi", B: "Sprawdzasz dokładne informacje", C: "Mówisz co prawdopodobnie jest w burgerze" }, correct: "B" },
+  { q: "Kolejka jest bardzo długa, a gość zadaje pytania.", options: { A: "Odpowiadasz krótko i uprzejmie", B: "Proponujesz szybką rekomendację", C: "Odpowiadasz znikomo" }, correct: "B" },
+  { q: "Gość wygląda na zdenerwowanego.", options: { A: "Pytasz czy możesz pomóc", B: "Pytasz „co się stało?”", C: "Czekasz aż sam coś powie" }, correct: "A" },
+  { q: "Gość mówi że czeka bardzo długo.", options: { A: "Sprawdzasz zamówienie i pytasz kuchni kiedy będzie", B: "Przepraszasz i sprawdzasz zamówienie", C: "Wyjaśniasz że masz bardzo dużo zamówień" }, correct: "B" },
+  { q: "Gość prosi o pomoc przy kiosku zamówień.", options: { A: "Pomagasz", B: "Prosisz kolegę o pomoc", C: "Pomagasz lub organizujesz pomoc" }, correct: "C" },
+  { q: "Gość pyta o czas oczekiwania.", options: { A: "Podajesz przybliżony czas", B: "Sprawdzasz zamówienie i informujesz", C: "Mówisz że trudno powiedzieć" }, correct: "B" },
+  { q: "Gość mówi że restauracja jest brudna.", options: { A: "Dziękujesz za uwagę", B: "Dziękujesz i reagujesz", C: "Dziękujesz i mówisz że ktoś się tym zajmie" }, correct: "B" },
+  { q: "Gość pyta o rekomendację burgera.", options: { A: "Polecasz najpopularniejszy burger", B: "Pytasz co lubi i polecasz burgera", C: "Mówisz że wszystko jest dobre" }, correct: "B" },
+  { q: "Gość dziękuje za obsługę.", options: { A: "Uśmiechasz się", B: "Odpowiadasz uprzejmie", C: "Odpowiadasz uprzejmie i zapraszasz ponownie" }, correct: "C" },
+  { q: "Gość wychodzi z restauracji.", options: { A: "Uśmiechasz się", B: "Uśmiechasz się i żegnasz", C: "Mówisz „do widzenia, zapraszamy ponownie”" }, correct: "C" }
 ];
 
 const form = document.getElementById("quizForm");
@@ -486,9 +389,20 @@ function submitQuiz(auto=false){
 
   const percent = Math.round((score / questions.length) * 100);
   const passed = score >= PASS_SCORE;
-
   const name = document.getElementById("employeeName").value.trim() || "Brak danych";
   const date = document.getElementById("examDate").value || new Date().toISOString().slice(0,10);
+
+  fetch(SHEETS_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: name,
+      score: score,
+      total: questions.length,
+      percent: percent,
+      status: passed ? "Zaliczone" : "Niezaliczone"
+    })
+  }).catch(err => console.log("Błąd zapisu:", err));
 
   document.getElementById("rName").textContent = name;
   document.getElementById("rScore").textContent = `${score}/${questions.length}`;
