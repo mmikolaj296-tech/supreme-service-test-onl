@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Supreme Service – Test online</title>
+  <style>
+    :root{
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --accent:#0f766e;
+      --accent2:#115e59;
+      --border:#d1d5db;
+      --ok:#166534;
+      --bad:#991b1b;
+      --warn:#92400e;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.45;
+    }
+    .wrap{
+      max-width:980px;
+      margin:24px auto 48px;
+      padding:0 16px;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:22px;
+      box-shadow:0 6px 18px rgba(0,0,0,.05);
+      margin-bottom:18px;
+    }
+    h1,h2,h3{margin:0 0 12px}
+    h1{font-size:30px}
+    h2{font-size:22px}
+    h3{font-size:18px}
+    p{margin:8px 0}
+    .muted{color:var(--muted)}
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+    @media (max-width:700px){
+      .grid{grid-template-columns:1fr}
+    }
+    label.block{
+      display:block;
+      font-weight:700;
+      margin-bottom:6px;
+    }
+    input[type="text"], input[type="date"]{
+      width:100%;
+      padding:12px 14px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      font-size:15px;
+    }
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:5;
+      background:rgba(246,247,251,.96);
+      backdrop-filter: blur(8px);
+      padding:10px 0 14px;
+    }
+    .topbar-inner{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .timer{
+      font-weight:700;
+      font-size:22px;
+      color:var(--accent2);
+      padding:10px 14px;
+      background:#ecfeff;
+      border:1px solid #a5f3fc;
+      border-radius:12px;
+    }
+    .timer.warning{
+      color:var(--warn);
+      background:#fffbeb;
+      border-color:#fcd34d;
+    }
+    .timer.danger{
+      color:var(--bad);
+      background:#fef2f2;
+      border-color:#fecaca;
+    }
+    .meta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .badge{
+      padding:8px 12px;
+      border-radius:999px;
+      background:#f3f4f6;
+      border:1px solid var(--border);
+      font-size:14px;
+    }
+    .question{
+      padding:18px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      margin-bottom:14px;
+      background:#fff;
+    }
+    .question-title{
+      font-weight:700;
+      margin-bottom:12px;
+    }
+    .answers{
+      display:grid;
+      gap:10px;
+    }
+    .answer{
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:12px 14px;
+      cursor:pointer;
+      transition:.15s ease;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      background:#fff;
+    }
+    .answer:hover{
+      border-color:#94a3b8;
+      background:#f8fafc;
+    }
+    .answer input{
+      margin-top:3px;
+    }
+    .actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+    button{
+      border:none;
+      border-radius:12px;
+      padding:12px 18px;
+      font-size:15px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    .primary{background:var(--accent); color:#fff;}
+    .primary:hover{background:var(--accent2);}
+    .secondary{background:#e5e7eb; color:#111827;}
+    .secondary:hover{background:#d1d5db;}
+    .result{
+      display:none;
+    }
+    .score-box{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      margin-top:10px;
+    }
+    @media (max-width:800px){
+      .score-box{grid-template-columns:repeat(2,1fr);}
+    }
+    @media (max-width:500px){
+      .score-box{grid-template-columns:1fr;}
+    }
+    .stat{
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:16px;
+      background:#fff;
+    }
+    .stat .big{
+      font-size:28px;
+      font-weight:700;
+      margin-top:6px;
+    }
+    .pass{color:var(--ok)}
+    .fail{color:var(--bad)}
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:12px;
+      background:#fff;
+      border:1px solid var(--border);
+    }
+    th, td{
+      border:1px solid var(--border);
+      padding:10px;
+      text-align:left;
+      vertical-align:top;
+      font-size:14px;
+    }
+    th{background:#f9fafb}
+    .footer-note{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:12px;
+    }
+    .print-only{display:none}
+    @media print{
+      .no-print{display:none !important}
+      .print-only{display:block}
+      body{background:#fff}
+      .wrap{max-width:none; margin:0; padding:0}
+      .card, .question{
+        box-shadow:none;
+        border:1px solid #999;
+      }
+      .result{display:block !important}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar no-print">
+      <div class="topbar-inner">
+        <div class="meta">
+          <div class="badge"><strong>Test online</strong></div>
+          <div class="badge">Automatyczne liczenie punktów</div>
+          <div class="badge">Poziom zaliczenia: <strong>9/12</strong></div>
+          <div class="badge">Czas egzaminu: <strong>10 minut</strong></div>
+        </div>
+        <div id="timer" class="timer">10:00</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h1>Supreme Service – Test online</h1>
+      <p class="muted">Wersja z automatycznym liczeniem punktów, limitem czasu i arkuszem wyników.</p>
+      <div class="grid">
+        <div>
+          <label class="block" for="employeeName">Imię i nazwisko</label>
+          <input id="employeeName" type="text" placeholder="Wpisz imię i nazwisko" />
+        </div>
+        <div>
+          <label class="block" for="examDate">Data</label>
+          <input id="examDate" type="date" />
+        </div>
+      </div>
+      <p><strong>Instrukcja:</strong> zaznacz jedną najlepszą odpowiedź. Każda poprawna odpowiedź to 1 punkt. Test kończy się automatycznie po upływie czasu.</p>
+    </div>
+
+    <form id="quizForm" class="card"></form>
+
+    <div class="card no-print">
+      <div class="actions">
+        <button class="primary" type="button" onclick="submitQuiz()">Zakończ i policz wynik</button>
+        <button class="secondary" type="button" onclick="resetQuiz()">Wyczyść odpowiedzi</button>
+        <button class="secondary" type="button" onclick="window.print()">Drukuj arkusz wyników</button>
+        <button class="secondary" type="button" onclick="downloadCSV()">Pobierz wynik CSV</button>
+      </div>
+    </div>
+
+    <div id="result" class="card result">
+      <h2>Arkusz wyników</h2>
+      <div class="score-box">
+        <div class="stat">
+          <div class="muted">Pracownik</div>
+          <div class="big" id="rName">—</div>
+        </div>
+        <div class="stat">
+          <div class="muted">Wynik</div>
+          <div class="big" id="rScore">0/12</div>
+        </div>
+        <div class="stat">
+          <div class="muted">Procent</div>
+          <div class="big" id="rPercent">0%</div>
+        </div>
+        <div class="stat">
+          <div class="muted">Status</div>
+          <div class="big" id="rStatus">—</div>
+        </div>
+      </div>
+
+      <p id="summaryText"></p>
+
+      <h3>Szczegóły odpowiedzi</h3>
+      <table id="detailsTable">
+        <thead>
+          <tr>
+            <th>Nr</th>
+            <th>Odpowiedź pracownika</th>
+            <th>Poprawna odpowiedź</th>
+            <th>Wynik</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="footer-note">
+        Poziom zaliczenia: 9–12 pkt = zaliczone, 0–8 pkt = niezaliczone.
+      </div>
+    </div>
+  </div>
+
+<script>
+const EXAM_MINUTES = 10;
+const PASS_SCORE = 9;
+
+const questions = [
+  {
+    q: "Gość mówi, że burger jest zimny.",
+    options: {
+      A: "Sprawdzasz burgera i potem proponujesz wymianę",
+      B: "Przepraszasz i od razu proponujesz wymianę",
+      C: "Proponujesz nowego burgera"
+    },
+    correct: "B"
+  },
+  {
+    q: "Gość dostał złe zamówienie, ale mówi „może być”.",
+    options: {
+      A: "Pytasz czy jest pewny",
+      B: "Proponujesz poprawę zamówienia",
+      C: "Mówisz że jeśli chce możesz wymienić"
+    },
+    correct: "B"
+  },
+  {
+    q: "Gość pyta o skład burgera, którego nie pamiętasz.",
+    options: {
+      A: "Mówisz że nie jesteś pewny, ale zapytasz kolegi",
+      B: "Sprawdzasz dokładne informacje",
+      C: "Mówisz co prawdopodobnie jest w burgerze"
+    },
+    correct: "B"
+  },
+  {
+    q: "Kolejka jest bardzo długa, a gość zadaje pytania.",
+    options: {
+      A: "Odpowiadasz krótko i uprzejmie",
+      B: "Proponujesz szybką rekomendację",
+      C: "Odpowiadasz znikomo"
+    },
+    correct: "B"
+  },
+  {
+    q: "Gość wygląda na zdenerwowanego.",
+    options: {
+      A: "Pytasz czy możesz pomóc",
+      B: "Pytasz „co się stało?”",
+      C: "Czekasz aż sam coś powie"
+    },
+    correct: "A"
+  },
+  {
+    q: "Gość mówi że czeka bardzo długo.",
+    options: {
+      A: "Sprawdzasz zamówienie i pytasz kuchni kiedy będzie",
+      B: "Przepraszasz i sprawdzasz zamówienie",
+      C: "Wyjaśniasz że masz bardzo dużo zamówień"
+    },
+    correct: "B"
+  },
+  {
+    q: "Gość prosi o pomoc przy kiosku zamówień.",
+    options: {
+      A: "Pomagasz",
+      B: "Prosisz kolegę o pomoc",
+      C: "Pomagasz lub organizujesz pomoc"
+    },
+    correct: "C"
+  },
+  {
+    q: "Gość pyta o czas oczekiwania.",
+    options: {
+      A: "Podajesz przybliżony czas",
+      B: "Sprawdzasz zamówienie i informujesz",
+      C: "Mówisz że trudno powiedzieć"
+    },
+    correct: "B"
+  },
+  {
+    q: "Gość mówi że restauracja jest brudna.",
+    options: {
+      A: "Dziękujesz za uwagę",
+      B: "Dziękujesz i reagujesz",
+      C: "Dziękujesz i mówisz że ktoś się tym zajmie"
+    },
+    correct: "B"
+  },
+  {
+    q: "Gość pyta o rekomendację burgera.",
+    options: {
+      A: "Polecasz najpopularniejszy burger",
+      B: "Pytasz co lubi i polecasz burgera",
+      C: "Mówisz że wszystko jest dobre"
+    },
+    correct: "B"
+  },
+  {
+    q: "Gość dziękuje za obsługę.",
+    options: {
+      A: "Uśmiechasz się",
+      B: "Odpowiadasz uprzejmie",
+      C: "Odpowiadasz uprzejmie i zapraszasz ponownie"
+    },
+    correct: "C"
+  },
+  {
+    q: "Gość wychodzi z restauracji.",
+    options: {
+      A: "Uśmiechasz się",
+      B: "Uśmiechasz się i żegnasz",
+      C: "Mówisz „do widzenia, zapraszamy ponownie”"
+    },
+    correct: "C"
+  }
+];
+
+const form = document.getElementById("quizForm");
+const timerEl = document.getElementById("timer");
+const resultEl = document.getElementById("result");
+let remaining = EXAM_MINUTES * 60;
+let submitted = false;
+
+function buildQuiz(){
+  questions.forEach((item, index) => {
+    const box = document.createElement("div");
+    box.className = "question";
+    box.innerHTML = `<div class="question-title">${index + 1}. ${item.q}</div>`;
+    const answers = document.createElement("div");
+    answers.className = "answers";
+
+    Object.entries(item.options).forEach(([key, text]) => {
+      const label = document.createElement("label");
+      label.className = "answer";
+      label.innerHTML = `
+        <input type="radio" name="q${index}" value="${key}">
+        <div><strong>${key}.</strong> ${text}</div>
+      `;
+      answers.appendChild(label);
+    });
+
+    box.appendChild(answers);
+    form.appendChild(box);
+  });
+}
+
+function updateTimer(){
+  const min = String(Math.floor(remaining / 60)).padStart(2, "0");
+  const sec = String(remaining % 60).padStart(2, "0");
+  timerEl.textContent = `${min}:${sec}`;
+  timerEl.className = "timer";
+  if (remaining <= 180) timerEl.classList.add("warning");
+  if (remaining <= 60) timerEl.classList.add("danger");
+
+  if (remaining <= 0 && !submitted){
+    submitQuiz(true);
+    return;
+  }
+  remaining--;
+}
+
+function getAnswers(){
+  return questions.map((_, index) => {
+    const checked = document.querySelector(`input[name="q${index}"]:checked`);
+    return checked ? checked.value : "";
+  });
+}
+
+function submitQuiz(auto=false){
+  if(submitted) return;
+  submitted = true;
+
+  const answers = getAnswers();
+  let score = 0;
+
+  answers.forEach((ans, i) => {
+    if(ans === questions[i].correct) score++;
+  });
+
+  const percent = Math.round((score / questions.length) * 100);
+  const passed = score >= PASS_SCORE;
+
+  const name = document.getElementById("employeeName").value.trim() || "Brak danych";
+  const date = document.getElementById("examDate").value || new Date().toISOString().slice(0,10);
+
+  document.getElementById("rName").textContent = name;
+  document.getElementById("rScore").textContent = `${score}/${questions.length}`;
+  document.getElementById("rPercent").textContent = `${percent}%`;
+
+  const statusEl = document.getElementById("rStatus");
+  statusEl.textContent = passed ? "Zaliczone" : "Niezaliczone";
+  statusEl.className = "big " + (passed ? "pass" : "fail");
+
+  document.getElementById("summaryText").textContent =
+    `${auto ? "Czas minął. " : ""}Data egzaminu: ${date}. Wynik końcowy: ${score}/${questions.length}. ${passed ? "Pracownik zaliczył test." : "Pracownik nie zaliczył testu."}`;
+
+  const tbody = document.querySelector("#detailsTable tbody");
+  tbody.innerHTML = "";
+  answers.forEach((ans, i) => {
+    const tr = document.createElement("tr");
+    const ok = ans === questions[i].correct;
+    tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td>${ans || "brak odpowiedzi"}</td>
+      <td>${questions[i].correct}</td>
+      <td class="${ok ? 'pass' : 'fail'}"><strong>${ok ? '1 pkt' : '0 pkt'}</strong></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  resultEl.style.display = "block";
+  resultEl.scrollIntoView({behavior:"smooth"});
+}
+
+function resetQuiz(){
+  if(!confirm("Wyczyścić wszystkie odpowiedzi i rozpocząć od nowa?")) return;
+  document.getElementById("quizForm").reset();
+  resultEl.style.display = "none";
+  submitted = false;
+  remaining = EXAM_MINUTES * 60;
+}
+
+function downloadCSV(){
+  const name = document.getElementById("employeeName").value.trim() || "Brak danych";
+  const date = document.getElementById("examDate").value || new Date().toISOString().slice(0,10);
+  const answers = getAnswers();
+
+  let score = 0;
+  answers.forEach((ans, i) => { if(ans === questions[i].correct) score++; });
+  const passed = score >= PASS_SCORE ? "Zaliczone" : "Niezaliczone";
+
+  let csv = "Imię i nazwisko,Data,Wynik,Status\n";
+  csv += `"${name}","${date}","${score}/${questions.length}","${passed}"\n\n`;
+  csv += "Nr,Odpowiedź pracownika,Poprawna odpowiedź,Punkty\n";
+  answers.forEach((ans, i) => {
+    csv += `${i+1},${ans || "brak"},${questions[i].correct},${ans === questions[i].correct ? 1 : 0}\n`;
+  });
+
+  const blob = new Blob([csv], {type: "text/csv;charset=utf-8;"});
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "arkusz_wynikow_supreme_service.csv";
+  link.click();
+}
+
+buildQuiz();
+updateTimer();
+setInterval(() => {
+  if(!submitted) updateTimer();
+}, 1000);
+document.getElementById("examDate").value = new Date().toISOString().slice(0,10);
+</script>
+</body>
+</html>
